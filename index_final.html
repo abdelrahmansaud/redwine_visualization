@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
+        <style>
+        h2 {
+            color: black;
+            text-align: center;
+        }
+
+        .caption {
+            text-align: center;
+        }
+
+
+        td {
+            margin: auto;
+            width: 1%;
+            padding: 10px;
+        }
+
+        div.features {
+            top: 610px;
+            left: 290px;
+        }
+
+        div.features div {
+            background-color: rgb(128, 194, 189);
+            padding: 3px;
+            margin: 7px;
+            float: mid;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 3px 10px 0 rgba(0,0,0,0.19);
+        }
+
+        </style>
+
+    <script type="text/javascript">
+
+    function draw(data) {
+
+        var margin = 75;
+        var width = 900 - margin;
+        var height = 500 - margin;
+
+        d3.select("#title1")
+            .append("h2")
+            .text("Red Wine Quality Distribution");
+
+        var svg2 = d3.select("#chart1")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+
+
+        var myChart = new dimple.chart(svg2, data);
+        var x = myChart.addCategoryAxis("x", "Quality");
+        myChart.addMeasureAxis("y", "Frequency");
+        myChart.addSeries(null, dimple.plot.bar);
+        myChart.draw();
+
+
+        d3.select("#title2")
+            .append("h2")
+            .text("Red Wine chemical properties correlations with quality");
+
+        /* 
+            Features are used to render button
+            Add or remove features to add or remove button
+        */
+        var features = ["Volatile Acidity", "Sulphates", "Alcohol", "Citric Acid"];
+
+        var buttons = d3.select("#ybuttons")
+            .append("div")
+            .attr("class", "features")
+            .selectAll("div")
+            .data(features)
+            .enter()
+            .append("div")
+            .text(function(d) {
+                return d;
+            });
+
+        /*
+            Definition of on-clik function for buttons
+            which toggles buttons selection
+            and calls function which draws correlation chart
+        */
+        buttons.on("click", function(d) {
+            d3.select(".features")
+                .selectAll("div")
+                .transition()
+                .duration(500)
+                .style("background-color", "rgb(128, 194, 189)")
+                .style("color", "black");
+
+            d3.select(this)
+                .transition()
+                .duration(500)
+                .style("background", "lightBlue")
+                .style("color", "white");
+            plot_cor(d);
+        }); 
+
+        /* 
+            Initial call of correlations chart and buttons 
+            with initial selection of citric acid
+        */
+        buttons[0][3].click();
+        plot_cor();
+
+        /* 
+            Draws the correlations chart with 
+            Citric Acid as initial selection
+        */
+        function plot_cor(feature="Citric Acid") {
+            d3.select("#chart2").selectAll("*").remove();
+            d3.select("#title").selectAll("*").remove();
+            d3.select("#title")
+                .append("h3")
+                .style("text-align", "center")
+                .text(feature + " correlation with Quality");
+            var svg3 = d3.select("#chart2")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
+
+            var myChart2 = new dimple.chart(svg3, data);
+            var x = myChart2.addCategoryAxis("x", "Quality");
+            myChart2.addMeasureAxis("y", feature);
+            myChart2.addSeries(null, dimple.plot.line);
+            myChart2.draw();
+        };
+    };
+    </script>
+  </head>
+<body>
+
+    <table border="0">
+        <tr><div id="title1"></div></tr>
+        <tr>
+        <td><p style="font-size:110%;">
+        The dataset is related to red of the Portuguese 
+        “Vinho Verde” wine. 
+        </br>
+        For more details, consult: 
+        http://www.vinhoverde.pt/en/ or the reference [Cortez et al., 2009].
+        </br></br>
+        It was created using red wine samples. </br>
+        The inputs include objective tests (e.g. PH values) and the output is 
+        based on sensory data (median of at least 3 evaluations made by 
+        wine experts). 
+        </br>
+        Each expert graded the wine quality between 0 (very bad)
+        and 10 (excellent).
+        </p></td>
+        <td><div id="chart1"></div></td>
+        </tr>
+    </table>
+    <div class="caption">Qualities (5, 6, 7) represent 95% of the data</div>
+    <table border="0">
+        <tr><div id="title2"></div></tr>
+        <tr><div align="center" id="buttons"></div></tr>
+        <tr><div align="center" id="title"></div></tr>
+        <tr>
+        <td><div id="ybuttons"></div></td>
+        <td><div id="chart2"></div></td>
+        </tr>
+        <tr>
+        <td></td>
+        <td><div id="xbuttons"></div></td>
+        </tr>
+        <tr><div align="center">Low quality: 3, High quality: 8</div></tr>
+    </table>
+
+    
+    
+    
+    <script type="text/javascript">
+
+    // Minor changes to variable names for clearer display
+    d3.csv("med.csv", function(d) {
+        d['Alcohol'] = +d["alcohol"];
+        d['fixed.acidity'] = +d["fixed.acidity"];
+        d['Sulphates'] = +d["sulphates"];
+        d['pH'] = +d["pH"];
+        d['density'] = +d["density"];
+        d['total.sulfur.dioxide'] = +d["total.sulfur.dioxide"];
+        d['free.sulfur.dioxide'] = +d["free.sulfur.dioxide"];
+        d['chlorides'] = +d["chlorides"];
+        d['residual.sugar'] = +d["residual.sugar"];
+        d['Citric Acid'] = +d["citric.acid"];
+        d['Volatile Acidity'] = +d["volatile.acidity"];
+        d['Frequency'] = +d["frequency"];
+        d['Quality'] = +d["quality"];
+        return d;
+    }, draw);
+    </script>
+</body>
+</html>
