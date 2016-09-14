@@ -11,6 +11,8 @@ are medium quality, and shows the correlation between chemical properties
 (citric acid) and quality, and give the viewer the option to explore other
 interesting correlations.
 
+The visualization can be viewed [here](http://htmlpreview.github.io/?https://github.com/abdelrahmansaud/redwine_visualization/blob/master/index_final.html)
+
  
 
 ### Design
